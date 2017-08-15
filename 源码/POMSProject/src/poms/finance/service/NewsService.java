@@ -23,12 +23,12 @@ public class NewsService {
 	private ICenterOrderService centerOrderService;
 	
 	
-    public Map<String, Double> getSumByPeriod(Date startDate, Date endDate, int stationID){
+    public Map<String, Object> getSumByPeriod(Date startDate, Date endDate, int stationID){
         return centerOrderService.selectSumByPeriod(startDate,endDate,stationID);
     }
 
-    public List<DeliverAreaCustomer> getCustomerArea(int stationID){
-        return centerCustomerService.selectDeliverAreaCustomer(stationID);
+    public List<DeliverAreaCustomer> getCustomerArea(int stationID,int page){
+        return centerCustomerService.selectDeliverAreaCustomer(stationID,page);
     }
 
     public List<NewspaperCount> getDeliverSum(){

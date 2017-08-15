@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import poms.center.constants.CommonConstants;
 import poms.center.constants.ModifyTypeConstants;
 import poms.center.dao.IOrderChangeDao;
 import poms.center.dao.IOrderDao;
@@ -101,9 +102,9 @@ public class CenterOrderServiceImpl implements ICenterOrderService{
 	}
 
 	@Override
-	public List<Order> selectAllOrder(int stationID) {
+	public List<Order> selectAllOrder(int stationID,int page) {
 		// TODO Auto-generated method stub
-		return orderDao.selectOrderList(stationID);
+		return orderDao.selectOrderList(stationID,page*CommonConstants.PAGE_SIZE);
 	}
 
 	@Override
@@ -119,9 +120,10 @@ public class CenterOrderServiceImpl implements ICenterOrderService{
 	}
 
 	@Override
-	public Map<String, Double> selectSumByPeriod(Date startDate, Date endDate, int stationID) {
+	public Map<String, Object> selectSumByPeriod(Date startDate, Date endDate, int stationID) {
 		// TODO Auto-generated method stub
-		Map<String ,Double> result = new HashMap<String,Double>();
+		Map<String ,Object> result = new HashMap<String,Object>();
+		result.put("stationID",stationID);
 		result.put("cash",orderDao.getCashByPeriod(startDate,endDate,stationID));
 		result.put("check",orderDao.getCheckSumByPeriod(startDate,endDate,stationID));
 		result.put("coupon",orderDao.getCouponByPeriod(startDate,endDate,stationID));

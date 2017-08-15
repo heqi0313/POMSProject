@@ -25,7 +25,7 @@ public interface ICenterOrderService {
 	public int cancelPostpone(int stationID,int orderID) throws ParseException;
 	
 	public List<Order> selectOrderByID(int stationID,int orderID);
-	public List<Order> selectAllOrder(int stationID);
+	public List<Order> selectAllOrder(int stationID,int page);
 	
 	public int insertOrderChange(OrderChange orderChange);
 	
@@ -33,7 +33,7 @@ public interface ICenterOrderService {
 	
 	public List<NewspaperCount> selectNewspaperCount();
 	
-	public Map<String, Double> selectSumByPeriod(Date startDate,Date endDate, int stationID);
+	public Map<String, Object> selectSumByPeriod(Date startDate,Date endDate, int stationID);
 
 	public int updateOrderPay(OrderPay orderPay);
 	

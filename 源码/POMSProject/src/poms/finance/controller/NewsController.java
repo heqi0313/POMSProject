@@ -26,7 +26,7 @@ public class NewsController {
 
     @RequestMapping(value="/sumAccount",method= RequestMethod.GET)
     @ResponseBody
-    public Map<String, Double> sumAccoutByPeriod(ModelMap map){
+    public Map<String, Object> sumAccoutByPeriod(ModelMap map){
         return newsService.getSumByPeriod((Date)map.get("startDate"),(Date)map.get("endDate"),(int)map.get("stationID"));
     }
 
@@ -66,9 +66,9 @@ public class NewsController {
     
     @RequestMapping(value="/customerArea",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> customerArea(ModelMap map){
+    public Map<String,Object> customerArea(@RequestParam("page")int page,ModelMap map){
     	int stationID = (Integer)map.get("stationID");
-    	List<DeliverAreaCustomer> customerAreaList = newsService.getCustomerArea(stationID);
+    	List<DeliverAreaCustomer> customerAreaList = newsService.getCustomerArea(stationID,page);
     	Map<String,Object> resultMap = new HashMap<String, Object>();
     	resultMap.put("size", customerAreaList.size());
     	resultMap.put("data", customerAreaList);
