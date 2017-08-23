@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import poms.center.constants.CommonConstants;
 import poms.center.constants.ModifyTypeConstants;
@@ -46,9 +47,15 @@ public class CenterOrderServiceImpl implements ICenterOrderService{
 	}
 
 	@Override
+	@Transactional
 	public int deleteOrder(int stationID,int orderID) {
 		// TODO Auto-generated method stub
-		Order order = orderDao.selectOrderByID(stationID, orderID).get(0);
+		List<Order> orderList = orderDao.selectOrderByID(stationID, orderID);
+		if(orderList.size() == 0){
+			return 0;
+		}
+		
+		Order order = orderList.get(0);
 		OrderChange orderChange = new OrderChange();
 		orderChange.setOrderID(order.getOrderID());
 		orderChange.setOldValue(order.getOrderNum()+"");
@@ -60,30 +67,36 @@ public class CenterOrderServiceImpl implements ICenterOrderService{
 	}
 
 	@Override
+	@Transactional
 	public int cancelDeleteOrder(int stationID,int orderID) {
 		// TODO Auto-generated method stub
 		Order order = orderDao.selectOrderByID(stationID, orderID).get(0);
 		OrderChange orderChange = orderChangeDao.selectOrderChangeByID(order.getOrderID()).get(0);
 		order.setOrderNum(Integer.parseInt(orderChange.getOldValue()));
+		orderChangeDao.deleteOrderChange(orderID);
 		return orderDao.updateOrder(order);
 	}
 
 	@Override
+	@Transactional
 	public int cancelChangeAddress(int stationID,int orderID) {
 		// TODO Auto-generated method stub
 		Order order = orderDao.selectOrderByID(stationID, orderID).get(0);
 		OrderChange orderChange = orderChangeDao.selectOrderChangeByID(orderID).get(0);
 		order.setOrderAddress(orderChange.getOldValue());
+		orderChangeDao.deleteOrderChange(orderID);
 		return orderDao.updateOrder(order);
 	}
 
 	@Override
+	@Transactional
 	public int cancelPostpone(int stationID,int orderID) throws ParseException {
 		// TODO Auto-generated method stub
 		Order order = orderDao.selectOrderByID(stationID, orderID).get(0);
 		OrderChange orderChange = orderChangeDao.selectOrderChangeByID(orderID).get(0);
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		order.setDeliverDate(simpleDateFormat.parse(orderChange.getOldValue()));
+		orderChangeDao.deleteOrderChange(orderID);
 		return orderDao.updateOrder(order);
 	}
 
@@ -108,9 +121,9 @@ public class CenterOrderServiceImpl implements ICenterOrderService{
 	}
 
 	@Override
-	public List<PromptOrder> selectPromptOrderList(int stationID) {
+	public List<PromptOrder> selectPromptOrderList(int stationID,int page) {
 		// TODO Auto-generated method stub
-		return orderDao.selectPromptOrderList(stationID);
+		return orderDao.selectPromptOrderList(stationID,page*CommonConstants.PAGE_SIZE);
 	}
 
 	@Override
@@ -137,9 +150,9 @@ public class CenterOrderServiceImpl implements ICenterOrderService{
 	}
 
 	@Override
-	public List<OrderCount> selectOrderCountGroupByStationAndDate(Date date) {
+	public List<OrderCount> selectOrderCountGroupByStationAndDate(Date date,int page) {
 		// TODO Auto-generated method stub
-		return orderDao.selectOrderCountGroupByStationAndDate(date);
+		return orderDao.selectOrderCountGroupByStationAndDate(date,page*CommonConstants.PAGE_SIZE);
 	}
 
 	

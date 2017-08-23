@@ -8,12 +8,14 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import poms.center.entity.Duty;
 import poms.center.entity.Employee;
 import poms.center.entity.Operator;
 import poms.deliver.service.IPersonManageService;
@@ -30,7 +32,10 @@ public class PersonManageController {
 	@ResponseBody
 	public Map<String,Object> addEmployee(Employee employee,ModelMap modelMap){
 		int stationID = (int)modelMap.get("stationID");
+		int departmentID = (int) modelMap.get("departmentID");
 		employee.setStationID(stationID);
+		employee.setDepartmentID(departmentID);
+		System.out.println(employee.getDutyID());
 		int state = this.personManageService.insertEmployee(employee);
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put("result", state);
@@ -66,7 +71,7 @@ public class PersonManageController {
 	
 	@RequestMapping(value="/queryAllEmployee",method=RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object> employeeList(@RequestParam("page") int page,ModelMap modelMap){
+	public Map<String,Object> employeeList(@RequestParam(value="page",defaultValue="0") int page,ModelMap modelMap){
 		int stationID = (int) modelMap.get("stationID");
 		List<Employee> employeeList = this.personManageService.queryAllEmployee(stationID,page);
 		Map<String,Object> map = new HashMap<String, Object>();
@@ -75,9 +80,20 @@ public class PersonManageController {
 		return map;
 	}
 	
+	@RequestMapping(value="/employeeByName",method=RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> employeeByName(@RequestParam(value="page",defaultValue="0") int page,@RequestParam("employeeName")String employeeName,ModelMap map){
+		int stationID = (Integer)map.get("stationID");
+		List<Employee> employeeList = this.personManageService.selectEmployeeByName(stationID, employeeName,page);
+		Map<String,Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("size", employeeList.size());
+		resultMap.put("data", employeeList);
+		return resultMap;
+	}
+	
 	@RequestMapping("/addOperator")
 	@ResponseBody
-	public Map<String,Object> addOperator(Operator operator){
+	public Map<String,Object> addOperator(@ModelAttribute("oper")Operator operator){
 		int state = this.personManageService.insertOperator(operator);
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put("result", state);
@@ -101,7 +117,7 @@ public class PersonManageController {
 	
 	@RequestMapping("/updateOperator")
 	@ResponseBody
-	public Map<String,Object> updateOperator(Operator operator){
+	public Map<String,Object> updateOperator(@ModelAttribute("oper")Operator operator){
 		int state = this.personManageService.updateOperator(operator);
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put("result", state);
@@ -113,12 +129,23 @@ public class PersonManageController {
 	
 	@RequestMapping("/queryAllOperator")
 	@ResponseBody
-	public Map<String,Object> OperatorList(@RequestParam("page") int page,ModelMap modelMap){
+	public Map<String,Object> OperatorList(@RequestParam(value="page",defaultValue="0") int page,ModelMap modelMap){
 		int stationID = (int) modelMap.get("stationID");
 		List<Operator> employeeList = this.personManageService.queryAllOperator(stationID,page);
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put("size", employeeList.size());
 		map.put("data", employeeList);
 		return map;
+	}
+	
+	@RequestMapping(value = "/dutyList", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> dutyList(@RequestParam(value = "page", defaultValue = "0") int page, ModelMap map) {
+		int departmentID = (Integer) map.get("departmentID");
+		List<Duty> dutyList = this.personManageService.selectDutyList(departmentID, page);
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("size", dutyList.size());
+		resultMap.put("data", dutyList);
+		return resultMap;
 	}
 }

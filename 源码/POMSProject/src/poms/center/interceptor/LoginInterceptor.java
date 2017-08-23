@@ -33,8 +33,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 //		if (system.equals("login")) {
 //			return true;
 //		}
-	
-		if(url.indexOf("login") >= 0){
+		if(url.indexOf("login") >= 0 || url.indexOf("logout") >= 0){
 			return true;
 		}
 		
@@ -47,19 +46,19 @@ public class LoginInterceptor implements HandlerInterceptor {
 					return true;
 				}
 			} else if (level == 2) {
-				if (system.equals("publish") || system.equals("publishStation")) {
+				if (system.equals("publish")) {
 					return true;
 				}
 			} else if (level == 3) {
-				if (system.equals("deliver") || system.equals("deliverStation")) {
+				if (system.equals("deliver")) {
 					return true;
 				}
 			} else if (level == 4) {
-				if (system.equals("finance") || system.equals("financeStation")) {
+				if (system.equals("finance")) {
 					return true;
 				}
 			} else if (level == 5) {
-				if (system.equals("support") || system.equals("supportStation")) {
+				if (system.equals("support") ) {
 					return true;
 				}
 			}

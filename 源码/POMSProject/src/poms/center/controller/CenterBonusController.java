@@ -1,11 +1,16 @@
 package poms.center.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +28,7 @@ public class CenterBonusController {
 	
 	@Autowired
 	private ICenterBonusService centerBonusService;
-
+	
 	@RequestMapping(value="/insertGiftCard",method=RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> insertGiftCard(GiftCard giftCard){
@@ -42,6 +47,7 @@ public class CenterBonusController {
 		return resultMap;
 	}
 	
+	
 	@RequestMapping(value="/deleteGiftCard",method=RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> deleteGiftCard(@RequestParam("giftCardID") int giftCardID){
@@ -53,7 +59,7 @@ public class CenterBonusController {
 	
 	@RequestMapping(value="/giftCardList",method=RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object> giftCardList(@RequestParam("page") int page){
+	public Map<String,Object> giftCardList(@RequestParam(value="page",defaultValue="0") int page){
 		List<GiftCard> giftCardList = centerBonusService.selectGiftCardList(page);
 		Map<String,Object> resultMap = new  HashMap<String, Object>();
 		resultMap.put("size", giftCardList.size());
@@ -100,13 +106,14 @@ public class CenterBonusController {
 	
 	@RequestMapping(value="/couponList",method=RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object> couponList(@RequestParam("page") int page){
+	public Map<String,Object> couponList(@RequestParam(value="page",defaultValue="0") int page){
 		List<Coupon> couponList = centerBonusService.selectCouponList(page);
 		Map<String,Object> resultMap = new  HashMap<String, Object>();
 		resultMap.put("size", couponList.size());
 		resultMap.put("data", couponList);
 		return resultMap;
 	}
+	
 	
 	@RequestMapping(value="/couponByID",method=RequestMethod.GET)
 	@ResponseBody
@@ -116,5 +123,17 @@ public class CenterBonusController {
 		resultMap.put("size", couponList.size());
 		resultMap.put("data", couponList);
 		return resultMap;
+	}
+	
+	/**
+	 * 绑定日期处理函数，自动处理前台传递的date类型数据
+	 * @param binder
+	 */
+	
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		dateFormat.setLenient(false);
+		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
 	}
 }
